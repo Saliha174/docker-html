@@ -1,0 +1,3 @@
+git add .github/workflows/docker-image.yml
+git commit -m "CI: build & push image to GHCR"
+git push
