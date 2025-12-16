@@ -402,3 +402,90 @@ Stop / cleanup :
 
 docker stop site-ghcr
 docker rm site-ghcr
+***************************************
+🔁 Le test que tu veux faire (et qui est le bon)
+🎯 Objectif
+
+Modifier le HTML → pousser sur GitHub → GitHub rebuild l’image → tu pulls → le site change
+
+C’est exactement comme ça que ça doit fonctionner.
+
+1️⃣ Modifie ton index.html (localement)
+
+Par exemple, change clairement quelque chose :
+
+<h1>Hello depuis la CI GitHub 🚀</h1>
+<p>Build automatique OK</p>
+
+
+Sauvegarde.
+
+2️⃣ Commit + push (déclenche le rebuild automatique)
+
+Dans ton terminal :
+
+git add index.html
+git commit -m "Update HTML for CI test"
+git push
+
+
+👉 À CE MOMENT-LÀ :
+
+GitHub Actions se déclenche
+
+Une nouvelle image Docker est rebuild
+
+Le tag latest est mis à jour
+
+Va jeter un œil dans Actions → tu dois voir un nouveau run (vert à la fin).
+
+3️⃣ Très important : gérer le container local
+
+Si tu as déjà un container lancé avec l’ancienne image, il ne changera pas tout seul.
+
+Stoppe et supprime l’ancien container :
+docker ps
+docker stop site-ghcr
+docker rm site-ghcr
+
+4️⃣ Pull la nouvelle image
+docker pull ghcr.io/saliha174/docker-html:latest
+
+
+👉 Là, tu récupères la nouvelle image rebuild par GitHub.
+
+5️⃣ Relance le container
+docker run --name site-ghcr -p 8080:80 -d ghcr.io/saliha174/docker-html:latest
+
+6️⃣ Vérifie dans le navigateur
+
+👉 http://localhost:8080
+
+Tu dois voir :
+
+le nouveau contenu HTML
+
+Si oui :
+🎉 CI/CD validé de bout en bout
+
+🧠 Règle d’or à retenir (hyper importante)
+
+🔹 Changer le code ≠ changer un container
+🔹 Changer le code → rebuild image → relancer container
+
+Un container = photo figée d’une image à un instant T.
+
+Ce que tu sais faire maintenant (sans exagérer)
+
+Modifier du code
+
+Déclencher un rebuild automatique
+
+Publier une image
+
+Déployer une nouvelle version
+
+👉 C’est exactement le cycle pro.
+
+Fais le test tranquillement.
+Si tu veux, dis-moi juste “ça a changé” ou “ça n’a pas changé”, et je t’aide à diagnostiquer en 30 secondes si besoin.
